@@ -132,7 +132,7 @@ def split_card(bgr: np.ndarray, layout: str = "vertical", thresh: float = 0.35):
         rm, sm = np.zeros_like(keep), np.zeros_like(keep)
         rm[:, a0:a1] = keep[:, a0:a1]
         sm[:, b0:b1] = keep[:, b0:b1]
-    rank = make_glyph(ink, rm, color=ink_color(bgr, rm))
+    rank = make_glyph(ink, rm)  # ranks: colour does not matter (red 3 = black 3)
     suit = make_glyph(ink, sm, color=ink_color(bgr, sm))
     if rank is None or suit is None:
         return None
