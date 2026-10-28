@@ -1,0 +1,1 @@
+"""Local, offline poker advisor."""

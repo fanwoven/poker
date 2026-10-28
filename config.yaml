@@ -1,0 +1,113 @@
+# Poker advisor settings. Every setting lives here.
+# Lines starting with # are comments. Change a value, save, restart the advisor.
+
+# ---------------------------------------------------------------------------
+# Decision engine (the "brain")
+# ---------------------------------------------------------------------------
+engine:
+  # Equity (win chance) calculation
+  monte_carlo_samples: 20000     # more = more precise but slower
+  monte_carlo_time_limit_ms: 250 # stop simulating after this long
+  exact_max_evals: 400000        # use exact counting when the work is below this
+
+  # Equity realization: you rarely get your full equity, especially
+  # out of position (you act first and get pushed off hands).
+  realization_in_position: 0.95
+  realization_out_of_position: 0.80
+  realization_preflop_in_position: 0.85
+  realization_preflop_out_of_position: 0.70
+
+  # Postflop thresholds, added on top of your "fair share" (1 / players in pot)
+  value_bet_margin: 0.15         # bet for value when equity >= fair share + this
+  value_raise_margin: 0.22       # raise for value when facing a bet
+  strong_equity: 0.80            # "very strong" -> bigger bet sizes
+
+  # Implied odds: extra chips you expect to win later when a draw hits,
+  # as a fraction of the smaller of (stack left, pot). Only for draws.
+  implied_odds_factor: 0.25
+
+  # Bet sizes (fraction of pot)
+  size_strong: 0.75
+  size_medium: 0.50
+  size_river_strong: 0.85
+  size_river_medium: 0.60
+  size_semi_bluff: 0.60
+  size_river_bluff: 0.75
+  allin_spr: 1.5                 # with a value hand and SPR below this, just go all-in
+  allin_if_bet_over_stack: 0.60  # if a bet would use more than this share of stack, go all-in
+
+  # Preflop sizes (in big blinds / multipliers)
+  open_size_bb: 2.5
+  threebet_multiplier_ip: 3.0
+  threebet_multiplier_oop: 4.0
+  fourbet_multiplier: 2.3
+  round_to_bb: 0.5               # round bet amounts to this many big blinds
+
+  # Mixed strategy (so opponents can't read you). The dice roll (0-99) is
+  # seeded by the hand, so reading the same spot twice gives the same answer.
+  threebet_bluff_freq: 0.35      # how often to 3-bet the "bluff" hands below
+  fourbet_bluff_freq: 0.25
+  semi_bluff_freq: 0.50          # bet draws when checked to
+  semi_bluff_raise_freq: 0.15    # raise draws when facing a bet
+  river_bluff_scale: 0.50        # river bluff chance = scale * bet / (pot + bet)
+  river_bluff_max_equity: 0.20   # only bluff hands that can't win at showdown
+
+  # How we guess the opponent's preflop action from the amount to call
+  # (size of the biggest bet, in big blinds)
+  preflop_open_max_bb: 5.0       # up to this = a normal open
+  preflop_3bet_max_bb: 14.0      # up to this = a 3-bet, above = 4-bet or more
+
+  # When an opponent bets, keep the strongest part of their range.
+  # [bet as fraction of pot, share of range kept as value]
+  # Bluffs are added on top in the share bet / (pot + 2*bet).
+  narrow_by_bet_size:
+    - [0.35, 0.65]
+    - [0.55, 0.55]
+    - [0.80, 0.45]
+    - [1.10, 0.38]
+    - [1.60, 0.30]
+    - [99.0, 0.25]
+
+# ---------------------------------------------------------------------------
+# Ranges (standard notation). Edit freely: "22+, A2s+, KTo+, T9s-65s, AKo:0.5"
+# ---------------------------------------------------------------------------
+ranges:
+  # Hands YOU open-raise when nobody has raised yet, by position.
+  open:
+    UTG:  "66+, A9s+, KTs+, QTs+, JTs, T9s, AJo+, KQo"
+    UTG1: "55+, A8s+, A5s, KTs+, QTs+, JTs, T9s, 98s, AJo+, KQo"
+    UTG2: "55+, A7s+, A5s-A4s, K9s+, Q9s+, J9s+, T9s, 98s, ATo+, KJo+"
+    LJ:   "44+, A2s+, K9s+, Q9s+, J9s+, T8s+, 98s, 87s, ATo+, KJo+"
+    HJ:   "33+, A2s+, K8s+, Q9s+, J9s+, T8s+, 97s+, 87s, 76s, ATo+, KTo+, QJo"
+    CO:   "22+, A2s+, K6s+, Q8s+, J8s+, T8s+, 97s+, 86s+, 76s, 65s, A8o+, KTo+, QTo+, JTo"
+    BTN:  "22+, A2s+, K2s+, Q5s+, J7s+, T7s+, 96s+, 85s+, 75s+, 64s+, 54s, A2o+, K8o+, Q9o+, J9o+, T9o, 98o"
+    SB:   "22+, A2s+, K5s+, Q7s+, J7s+, T7s+, 96s+, 86s+, 75s+, 65s, 54s, A5o+, K9o+, Q9o+, J9o+, T9o"
+  # BB raises a limped pot with these (otherwise checks)
+  iso_raise: "77+, ATs+, KQs, AJo+"
+
+  # YOUR 3-bets / 4-bets / 5-bets
+  threebet_value_vs_early: "QQ+, AKs, AKo"
+  threebet_value_vs_late: "JJ+, AQs+, AKo"
+  threebet_bluff: "A5s-A2s, K9s, Q9s, J9s, T8s, 76s, 65s, 54s"
+  fourbet_value: "QQ+, AKs, AKo"
+  fourbet_bluff: "A5s-A4s"
+  fivebet_value: "KK+, AKs"
+
+  # What we assume OPPONENTS hold, by what they did preflop.
+  # Opponent open-raise ranges use the "open" table above (by their position).
+  villain_default_open: "CO"       # position assumed when we don't know theirs
+  villain_call_open: "22-JJ, A9s-AQs, KTs+, QTs+, JTs, T9s, 98s, 87s, 76s, AJo-AQo, KQo"
+  villain_threebet: "TT+, AQs+, AKo, A5s-A4s, KQs"
+  villain_call_threebet: "TT-QQ, AJs-AQs, KQs, AQo, JTs:0.5"
+  villain_fourbet: "QQ+, AKs, AKo, A5s:0.5"
+  villain_limp: "22+, A2s+, K2s+, Q5s+, J7s+, T7s+, 97s+, 86s+, 75s+, 64s+, 54s, A2o+, K7o+, Q8o+, J8o+, T8o+, 98o"
+  villain_blind_defend: "any"      # unopened pot: blinds still to act could hold anything
+
+# ---------------------------------------------------------------------------
+# Bankroll rules: WARNINGS ONLY unless enforce is true. The math decides.
+# ---------------------------------------------------------------------------
+bankroll:
+  enforce: false                 # true = change the advice to obey the rules below
+  max_pct_stack_per_decision: 35 # warn if one decision risks more than this % of your stack
+  stack_floor: 0                 # warn if your stack would drop below this (0 = off)
+  stop_loss: 0                   # warn when the session loss reaches this (0 = off)
