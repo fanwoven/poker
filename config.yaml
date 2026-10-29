@@ -111,3 +111,43 @@ bankroll:
   max_pct_stack_per_decision: 35 # warn if one decision risks more than this % of your stack
   stack_floor: 0                 # warn if your stack would drop below this (0 = off)
   stop_loss: 0                   # warn when the session loss reaches this (0 = off)
+
+# ---------------------------------------------------------------------------
+# Screen capture
+# ---------------------------------------------------------------------------
+capture:
+  method: auto          # auto (Wayland: portal, X11/Windows: mss), portal, portal_screenshot, mss
+  source: monitor_or_window  # what the share dialog offers: monitor, window, monitor_or_window
+  fps: 15               # max frames per second taken from PipeWire
+  pipewire_backend: auto  # auto, gi (in-process GStreamer), gst-launch (subprocess)
+  monitor: 1            # mss only: which monitor
+
+# ---------------------------------------------------------------------------
+# Live advisor
+# ---------------------------------------------------------------------------
+live:
+  auto: true            # watch the table by itself (no key press needed)
+  read_interval_s: 0.5  # full table read this often (cheap: unchanged boxes are cached)
+  turn_poll_s: 0.1      # check the "my turn" box this often (very cheap)
+  big_blind: 0          # 0 = take it from the preset, or set with: bin/pa-ctl bb 20000
+  default_position: CO  # used (shown with "?") when the dealer button isn't calibrated
+  default_opponents: 1  # used (shown with "?") when opponents' cards aren't calibrated
+  save_unknown_frames: true   # keep screenshots with "?" so you can teach them later
+  unknown_save_every_s: 5
+
+# ---------------------------------------------------------------------------
+# Overlay window
+# ---------------------------------------------------------------------------
+overlay:
+  width: 430
+  font_scale: 1.0
+  opacity: 0.88
+  beep: true            # sound when the advice for your turn is ready
+  qt_platform: xcb      # Wayland: xcb = XWayland, needed for "always on top"
+
+# ---------------------------------------------------------------------------
+# Teach screen (optional local AI suggestions; never used during play)
+# ---------------------------------------------------------------------------
+teach:
+  ollama_model: "qwen2.5vl:7b"
+  ollama_url: "http://127.0.0.1:11434"

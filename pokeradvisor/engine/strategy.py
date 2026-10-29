@@ -67,6 +67,7 @@ class Advice:
     dice: int | None = None              # 0..99, None when no dice was used
     hand: str = ""                       # "top pair", "flush draw" ...
     villain_range: str = ""              # what we assume they have
+    villain: Range | None = None         # the same, as a Range (for the 13x13 grid)
     warnings: list[str] = field(default_factory=list)
     ms: float = 0.0
 
@@ -221,6 +222,7 @@ class Engine:
 
         vil = self.preflop_villain_ranges(s, kind)
         a.villain_range = vil[0].text
+        a.villain = vil[0]
         eq = self.equity(s.hero, [], vil, seed=_seed(s))
         a.equity = eq
         needed = s.to_call / (s.pot + s.to_call) if s.to_call else 0
@@ -344,6 +346,7 @@ class Engine:
     def _postflop(self, s: Spot, a: Advice, dice: int) -> Advice:
         vil = self.villain_ranges(s)
         a.villain_range = vil[0].text
+        a.villain = vil[0]
         eq = self.equity(s.hero, s.board, vil, seed=_seed(s))
         a.equity = eq
         e = eq.equity

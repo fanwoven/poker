@@ -1,0 +1,4 @@
+#!/bin/sh
+# Send a command to the running poker overlay. Bind this to keyboard shortcuts.
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$DIR/.venv/bin/python" "$DIR/pokeradvisor/ctl.py" "$@"

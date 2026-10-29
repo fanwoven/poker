@@ -119,3 +119,16 @@ def test_parse_amounts():
     assert parse_button("CHECK/FOLD", ab)[0] == "check"
     assert parse_button("CALL ANY", ab)[0] == "call_any"
     assert parse_button("ALL-IN 5,000", ab) == ("allin", 5000, False)
+
+
+def test_unseen_font_gives_unknown_not_wrong(taught, monkeypatch):
+    """App changed its graphics: the reader must say '?' rather than guess."""
+    monkeypatch.setattr(synth, "FONT", "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf")
+    rows = []
+    for seed in range(300, 340):
+        f, t = synth.table(seed)
+        taught._cache.clear()
+        rows.append((to_label_row(t), read_fields(taught, taught.read(f))))
+    res = score(rows, taught.p.abbreviations)
+    print("\n" + report(res, []))
+    assert sum(r["wrong"] for r in res.values() if r is not res["my_turn"]) == 0

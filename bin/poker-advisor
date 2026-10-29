@@ -1,0 +1,4 @@
+#!/bin/sh
+# Start the overlay:  bin/poker-advisor <preset>
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$DIR" && exec "$DIR/.venv/bin/python" -m pokeradvisor "$@"

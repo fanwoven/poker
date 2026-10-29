@@ -114,7 +114,7 @@ def parse_amount(text: str, abbreviations: dict) -> tuple[float | None, bool]:
 
 
 def parse_button(text: str, abbreviations: dict) -> tuple[str, float | None, bool]:
-    """Button text -> (kind, amount, approx). kind: check / call / call_any / allin / other."""
+    """Button text -> (kind, amount, approx). kind: check / bet / call / call_any / allin / other."""
     t = " ".join(text.upper().split())
     compact = t.replace(" ", "").replace("-", "")
     if "CALLANY" in compact:
@@ -127,6 +127,8 @@ def parse_button(text: str, abbreviations: dict) -> tuple[str, float | None, boo
         return "call", amt, approx
     if "CHECK" in compact:
         return "check", 0.0, False
+    if compact.startswith("BET"):      # a Bet button means nobody bet: nothing to call
+        return "bet", 0.0, False
     return "other", amt, approx
 
 
