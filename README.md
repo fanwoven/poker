@@ -222,6 +222,10 @@ Bankroll rules only **warn** unless you set `enforce: true`.
 
 ## 7. Problems
 
+- **Screen flashes / "Screenshot captured" notices**: that is the slow fallback
+  `portal_screenshot`. The normal method (`portal`, screen sharing) never flashes;
+  GNOME only shows a small screen-sharing icon in the top bar while it runs
+  (GNOME always shows it, for privacy).
 - **Black benchmark picture / capture fails**: run the benchmark again and
   pick the screen in the share dialog. To get the dialog again, delete
   `data/portal_restore_token`. Slow fallback: set `capture: method: portal_screenshot`.

@@ -1,6 +1,6 @@
 """Benchmark the capture methods on THIS computer.
 
-  python -m pokeradvisor.capture.bench            # try all that apply
+  python -m pokeradvisor.capture.bench            # the method the advisor uses
   python -m pokeradvisor.capture.bench portal     # just one
 
 Prints: start-up time, ms per grab, frames per second, frame size.
@@ -65,7 +65,10 @@ def bench(method: str, seconds: float = 5.0):
 
 
 def main():
-    methods = sys.argv[1:] or (["portal", "portal_screenshot"] if is_wayland() else ["mss"])
+    # portal_screenshot is NOT tested by default: GNOME flashes the screen and
+    # shows a "Screenshot captured" notice for every shot. Test it only on request:
+    #   python -m pokeradvisor.capture.bench portal_screenshot
+    methods = sys.argv[1:] or (["portal"] if is_wayland() else ["mss"])
     print("Wayland session" if is_wayland() else "X11 / Windows session")
     for m in methods:
         bench(m, seconds=5 if m != "portal_screenshot" else 3)

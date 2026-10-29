@@ -117,6 +117,7 @@ bankroll:
 # ---------------------------------------------------------------------------
 capture:
   method: auto          # auto (Wayland: portal, X11/Windows: mss), portal, portal_screenshot, mss
+                        # (portal_screenshot = slow fallback; GNOME flashes the screen on every shot)
   source: monitor_or_window  # what the share dialog offers: monitor, window, monitor_or_window
   fps: 15               # max frames per second taken from PipeWire
   pipewire_backend: auto  # auto, gi (in-process GStreamer), gst-launch (subprocess)
